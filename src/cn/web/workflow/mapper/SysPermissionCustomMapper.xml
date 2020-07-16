@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.web.workflow.mapper.SysPermissionCustomMapper">
+
+
+<resultMap id="menuListResultMap"  type="cn.web.workflow.pojo.TreeMenu">
+	<id column="id" property="id"/>
+	<result column="name" property="name"/>
+	<collection property="children" select="getSubMenu" column="id">
+		<id column="id" property="id" jdbcType="BIGINT" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="url" property="url" jdbcType="VARCHAR" />
+	    <result column="percode" property="percode" jdbcType="VARCHAR" />
+	    <result column="parentid" property="parentid" jdbcType="BIGINT" />
+	    <result column="parentids" property="parentids" jdbcType="VARCHAR" />
+	    <result column="sortstring" property="sortstring" jdbcType="VARCHAR" />
+	    <result column="available" property="available" jdbcType="CHAR" />
+	</collection>
+</resultMap>
+
+<resultMap type="cn.web.workflow.pojo.SysRole" id="roleAndPemrmissionResult">
+	<id column="id" property="id"/>
+	<result column="name" property="name"/>
+	<collection property="permissionList" ofType="cn.web.workflow.pojo.SysPermission">
+		<id column="permission_id" property="id"/>
+		<result column="permission_name" property="name"/>
+		<result column="type" property="type"/>
+		<result column="url" property="url"/>
+		<result column="percode" property="percode"/>
+	</collection>
+</resultMap>
+
+<!-- 查询一级导航  -->
+<select id="findMenuList" resultMap="menuListResultMap">
+	SELECT * FROM sys_permission WHERE parentid=1
+</select>
+<!-- 查询二级导航 -->
+<select id="getSubMenu" resultType="cn.web.workflow.pojo.SysPermission">
+	SELECT * FROM sys_permission WHERE parentid=#{id} AND TYPE LIKE '%menu%'
+</select>
+
+  <!-- 根据用户id查询url -->
+  <select id="findPermissionListByUserId" parameterType="string" resultType="cn.web.workflow.pojo.SysPermission">
+	SELECT 
+	  * 
+	FROM
+	  sys_permission 
+	WHERE TYPE = 'menu|permission' 
+	  AND id IN 
+	  (SELECT 
+	    sys_permission_id 
+	  FROM
+	    sys_role_permission 
+	  WHERE sys_role_id IN 
+	    (SELECT 
+	      sys_role_id 
+	    FROM
+	      sys_user_role 
+	    WHERE sys_user_id = #{id}))
+  </select>
+  
+   <!-- 根据用户id查询菜单 -->
+  <select id="findMenuListByUserId"  parameterType="string" resultType="cn.web.workflow.pojo.SysPermission">
+  	SELECT 
+	  * 
+	FROM
+	  sys_permission 
+	WHERE TYPE = 'menu' 
+	  AND id IN 
+	  (SELECT 
+	    sys_permission_id 
+	FROM
+	    sys_role_permission 
+	WHERE sys_role_id IN 
+		(SELECT 
+	      sys_role_id 
+	FROM
+	      sys_user_role 
+	WHERE sys_user_id = #{id}))
+  </select>
+
+<!-- 系统管理：用户列表 显示用户信息以及用户的上级主管名称  -->
+<select id="findUserAndRoleList" resultType="cn.web.workflow.pojo.EmployeeCustom">
+	  SELECT e.*,
+		s1.sys_role_id roleId,
+		s2.name rolename,
+		e2.name manager
+	 FROM employee e
+		INNER JOIN employee e2 ON e.manager_id=e2.id
+		INNER JOIN sys_user_role s1 ON e.name=s1.sys_user_id
+		INNER JOIN sys_role s2 ON s1.sys_role_id=s2.id
+</select>
+
+<!-- 系统管理：查看权限 根据用户名称查询出用户的角色和对应的权限列表信息  -->
+<select id="findRoleAndPermissionLIstByUserId" resultMap="roleAndPemrmissionResult" parameterType="java.lang.String">
+  	SELECT s1.*,
+       s3.id permission_id,
+       s3.name permission_name,
+       s3.type,
+       s3.url,
+       s3.percode	 
+	FROM sys_role s1
+	      INNER JOIN sys_role_permission s2 ON s1.id=s2.sys_role_id
+	      INNER JOIN sys_permission s3 ON s2.sys_permission_id=s3.id
+	      INNER JOIN sys_user_role s4 ON s4.sys_role_id=s1.id
+	      INNER JOIN employee e ON e.name=s4.sys_user_id
+	WHERE e.name= #{userId}
+</select>
+
+<!-- 修改下拉框权限信息 -->
+<update id="updateEmployeeRoles" parameterType="cn.web.workflow.pojo.SysUserRole">
+	UPDATE sys_user_role s SET s.sys_role_id=#{sysRoleId}
+	WHERE s.id=#{id}
+</update>
+
+</mapper>
