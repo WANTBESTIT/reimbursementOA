@@ -8,11 +8,12 @@ import java.util.List;
  * @author Thinkpad
  * 
  */
-public class ActiveUser implements java.io.Serializable {
-	private Long userid;//用户id（主键）
+public class ActiveUser extends Employee implements java.io.Serializable {
+	private Long userid;// 用户id（主键）
+	private String usercode;// 用户账号
 	private String username;// 用户名称
 
-	private List<SysPermission> menuTree;// 菜单
+	private List<TreeMenu> menuTree;// 菜单
 	private List<SysPermission> children;// 权限
 
 	public String getUsername() {
@@ -31,11 +32,19 @@ public class ActiveUser implements java.io.Serializable {
 		this.userid = userid;
 	}
 
-	public List<SysPermission> getMenuTree() {
+	public String getUsercode() {
+		return usercode;
+	}
+
+	public void setUsercode(String usercode) {
+		this.usercode = usercode;
+	}
+
+	public List<TreeMenu> getMenuTree() {
 		return menuTree;
 	}
 
-	public void setMenuTree(List<SysPermission> menuTree) {
+	public void setMenuTree(List<TreeMenu> menuTree) {
 		this.menuTree = menuTree;
 	}
 
@@ -47,5 +56,4 @@ public class ActiveUser implements java.io.Serializable {
 		this.children = children;
 	}
 
-	
 }

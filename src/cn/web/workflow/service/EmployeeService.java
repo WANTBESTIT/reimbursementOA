@@ -4,9 +4,8 @@ import java.util.List;
 
 import cn.web.workflow.pojo.Employee;
 import cn.web.workflow.pojo.EmployeeCustom;
+import cn.web.workflow.pojo.SysPermission;
 import cn.web.workflow.pojo.SysRole;
-import cn.web.workflow.pojo.SysRoleExample;
-import cn.web.workflow.pojo.SysUserRole;
 
 public interface EmployeeService {
 
@@ -22,8 +21,18 @@ public interface EmployeeService {
 	public List<Employee> findEmployeeByLevel(int level);
 
 	// 修改权限
-	public SysUserRole updateEmployeeRoles(String roleId, String userId);
+	public void updateEmployeeRoles(String roleId, String userId);
 
-	public List<SysRole> findAllRoleList(SysRoleExample sysRoleExample);
+	// 添加角色和分配权限
+	void addRoleAndPermissions(SysRole role, int[] permissionIds);
+
+	// 新建权限
+	public void addPermission(SysPermission sysPermission);
+
+	// 【角色列表】 修改角色
+	public void updateRoleAndPermissions(String rid,int[] permissionIds);
+	
+	// 【角色列表】删除角色
+	public void deleteRoleById(String roleId);
 
 }

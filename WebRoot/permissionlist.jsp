@@ -70,7 +70,7 @@
 			<h3 id="myModalLabel">权限列表</h3>
 		</div>
 		<form id="permissionForm" action="updateRoleAndPermission" method="post">
-		<input type="hidden" id="roleId" name="roleId"/>
+		<input type="hidden" id="rid" name="rid"/>
 		<div class="modal-body" id="roleList">
 			 <table class="table table-bordered"  width="800px">
 			    <thead>		
@@ -128,7 +128,7 @@ function viewPermissions(role_id){
 			alert(req.status+':'+error);
 		}
 	});
-}
+} 
 
 function closePanel() {
 	location = "findRoles";

@@ -9,6 +9,7 @@ public interface BaoxiaoBillService {
 	// 根据报销ID显示报销单
 	public List<Baoxiaobill> findBiaoxiaoBill(BaoxiaobillExample baoxiaoBill);
 
+	// 获取当前活动节点的连线信息
 	public List<String> findOutComeListByTaskId(String taskId);
 
 	public void deleteBaoxiaoBillById(Integer id);

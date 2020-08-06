@@ -3,7 +3,6 @@ package cn.web.workflow.shiro;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -30,32 +29,29 @@ public class CustomRealm extends AuthorizingRealm {
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
-		System.out.println("****************执行认证****************");
+		System.out.println("****************执行登录认证****************");
 		String username = (String) token.getPrincipal();
 		// 先判断账号是否存在，账号要唯一性
 		Employee user = null;
-		String password_db = null;
-		List<SysPermission> menuTree = null;
 		try {
 			user = sysService.findSysUserByUserCode(username);
-
-			if (user == null) {
-				return null; // UnknownAccountException
-			}
-			password_db = user.getPassword();
-			System.out.println(password_db);
-			// 查询当前登录用户的菜单
-			menuTree = sysService.findMenuListByUserId(username);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("**************" + menuTree);
-		String salt = user.getSalt();
+		if(user == null){
+			return null;
+		}
+		List<TreeMenu> menuList = sysService.loadMenuTree();
+		
 		ActiveUser activeUser = new ActiveUser();
 		activeUser.setUserid(user.getId());
+		activeUser.setUsercode(user.getName());
 		activeUser.setUsername(user.getName());
-		activeUser.setMenuTree(menuTree);
-
+		activeUser.setManagerId(user.getManagerId());
+		activeUser.setMenuTree(menuList);
+		
+		String password_db = user.getPassword();
+		String salt = user.getSalt();
 		SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(activeUser, password_db,
 				ByteSource.Util.bytes(salt), "CustomRealm");
 		return info;
@@ -68,6 +64,10 @@ public class CustomRealm extends AuthorizingRealm {
 		List<SysPermission> permissionList = null;
 		try {
 			permissionList = sysService.findPermissionListByUserId(activeUser.getUsername());
+//			for (SysPermission sysPermission : permissionList) {
+//				System.out.println("====="+sysPermission.getName());
+//				
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -48,15 +48,12 @@
                                 <label for="email">选择流程文件</label>
                                 <input type="file" class="form-control" id="processFile" name="processFile" placeholder="">
                             </div>
-
 							<button type="submit" class="btn btn-primary">部署流程</button>
                         </div>
                 </div>
             </form>
         </div>
-
     </div>
-
 </div>
 
 

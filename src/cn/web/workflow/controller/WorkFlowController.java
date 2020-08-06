@@ -13,6 +13,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,12 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import cn.web.workflow.pojo.ActiveUser;
 import cn.web.workflow.pojo.Baoxiaobill;
-import cn.web.workflow.pojo.Employee;
 import cn.web.workflow.service.BaoxiaoBillService;
 import cn.web.workflow.service.WorkFlowService;
-import cn.web.workflow.utils.Constants;
 
+/**
+ * 工作流程功能实现
+ * 
+ * @author 滨仔
+ *
+ */
 @Controller
 public class WorkFlowController {
 
@@ -35,20 +41,20 @@ public class WorkFlowController {
 	@Autowired
 	private BaoxiaoBillService baoxiaoBillService;
 
-	// 部署流程
+	// 发布流程
 	@RequestMapping("/deployProcess")
 	public String deployProcess(String processName, MultipartFile processFile) throws IOException {
 		workFlowService.deployProcess(processName, processFile.getInputStream());
 		return "redirect:/processDefinitionList";
-
 	}
 
-	// 查看部署流程信息
+	// 查看流程
 	@RequestMapping("/processDefinitionList")
 	public ModelAndView processDefinitionList() {
+		// 流程定义列表
 		List<ProcessDefinition> pdList = workFlowService.findAllProcessDefinitions();
+		// 部署流程列表
 		List<Deployment> deployList = workFlowService.findAllDeployments();
-
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("pdList", pdList);
 		mv.addObject("depList", deployList);
@@ -56,7 +62,7 @@ public class WorkFlowController {
 		return mv;
 	}
 
-	// 删除流程
+	// 删除部署流程
 	@RequestMapping("/delDeployment/{id}")
 	public String delDeployment(@PathVariable String id) {
 		workFlowService.delectDeployment(id);
@@ -66,7 +72,7 @@ public class WorkFlowController {
 	// 提交报销单数据
 	@RequestMapping("/saveStartLeave")
 	public String saveStartLeave(Baoxiaobill baoxiaoBill, HttpSession session) {
-		Employee employee = (Employee) session.getAttribute(Constants.GLOBAL_SESSION_ID);
+		ActiveUser employee = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
 		workFlowService.saveStartProcess(baoxiaoBill, employee);
 		return "redirect:/myTaskList";
 	}
@@ -74,8 +80,8 @@ public class WorkFlowController {
 	// 我的待办事务
 	@RequestMapping("/myTaskList")
 	public ModelAndView myTaskList(HttpSession session) {
-		Employee employee = (Employee) session.getAttribute(Constants.GLOBAL_SESSION_ID);
-		List<Task> list = workFlowService.findTaskListByUserId(employee.getName());
+		ActiveUser employee = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
+		List<Task> list = workFlowService.findTaskListByUserId(employee.getUsername());
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("taskList", list);
 		mv.setViewName("workflow_task");
@@ -85,8 +91,8 @@ public class WorkFlowController {
 	// 办理任务
 	@RequestMapping("/submitTask")
 	public String submitTask(Integer id, String taskId, String comment, String outcome, HttpSession session) {
-		Employee employee = (Employee) session.getAttribute(Constants.GLOBAL_SESSION_ID);
-		workFlowService.savesubmitTask(id, taskId, comment, outcome, employee.getName());
+		ActiveUser employee = (ActiveUser) SecurityUtils.getSubject().getPrincipal();
+		workFlowService.savesubmitTask(id, taskId, comment, outcome, employee.getUsername());
 		return "redirect:/myTaskList";
 	}
 
@@ -97,7 +103,7 @@ public class WorkFlowController {
 		Baoxiaobill baoxiaoBill = workFlowService.findBaoxiaoBillByTaskId(taskId);
 
 		List<Comment> commentList = workFlowService.findCommentListByTaskId(taskId);
-
+		// 获取当前活动节点的连线信息
 		List<String> outcomeList = baoxiaoBillService.findOutComeListByTaskId(taskId);
 
 		ModelAndView mv = new ModelAndView();
@@ -113,7 +119,8 @@ public class WorkFlowController {
 	@RequestMapping("/viewImage")
 	public String viewImage(String deploymentId, String imageName, HttpServletResponse response) throws IOException {
 		InputStream in = workFlowService.findImageInputStream(deploymentId, imageName);
-
+		System.out.println("deploymentId=========" + deploymentId);
+		System.out.println("imageName=========" + imageName);
 		OutputStream out = response.getOutputStream();
 
 		// 4：将输入流中的数据读取出来，写到输出流中

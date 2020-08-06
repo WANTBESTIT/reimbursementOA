@@ -38,7 +38,7 @@ public class BaoxiaoBillServiceImpl implements BaoxiaoBillService {
 	@Autowired
 	private BaoxiaobillMapper baoxiaoBillMapper;
 
-	//动态获取流程方向
+	//动态获取当前活动节点的连线信息
 	@Override
 	public List<String> findOutComeListByTaskId(String taskId) {
 		// 返回存放连线的名称集合

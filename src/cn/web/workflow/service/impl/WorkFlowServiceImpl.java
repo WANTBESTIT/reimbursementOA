@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.web.workflow.mapper.BaoxiaobillMapper;
+import cn.web.workflow.pojo.ActiveUser;
 import cn.web.workflow.pojo.Baoxiaobill;
-import cn.web.workflow.pojo.Employee;
 import cn.web.workflow.service.WorkFlowService;
 import cn.web.workflow.utils.Constants;
 
@@ -43,13 +43,12 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 	@Autowired
 	private BaoxiaobillMapper baoxiaoBillMapper;
 
+	// 查找所有流程定义信息
 	@Override
 	public List<ProcessDefinition> findAllProcessDefinitions() {
 		return repositoryService.createProcessDefinitionQuery().orderByProcessDefinitionVersion().desc().list();
-
 	}
-
-	// 查询所有的流程信息
+	// 查找所有部署流程信息
 	@Override
 	public List<Deployment> findAllDeployments() {
 		return repositoryService.createDeploymentQuery().list();
@@ -65,25 +64,24 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 
 	// 提交
 	@Override
-	public void saveStartProcess(Baoxiaobill baoxiaoBill, Employee employee) {
+	public void saveStartProcess(Baoxiaobill baoxiaoBill, ActiveUser employee) {
 		// 1. 保存请假单
 		baoxiaoBill.setCreatdate(new Date());
 		baoxiaoBill.setState(1);
-		baoxiaoBill.setUserId(Integer.parseInt(employee.getId().toString()));
+		baoxiaoBill.setUserId(Integer.parseInt(employee.getUserid().toString()));
 		baoxiaoBillMapper.insert(baoxiaoBill); // mybatis把主键回填到pojo对象中
-
 		// 2. 启动流程
 		String key = Constants.BAOXIAO_KEY;
 		Map<String, Object> map = new HashMap<String, Object>();
 		// 设置流程变量=待办人
-		map.put("inputUser", employee.getName());
+		map.put("inputUser", employee.getUsername());
 		String BUSSINESS_KEY = Constants.BAOXIAO_KEY + "." + baoxiaoBill.getId();
-		System.out.println(BUSSINESS_KEY);
-
+		// System.out.println(BUSSINESS_KEY);
 		// 怎样把流程业务数据和应用的业务表的数据相关联： 例如：如果得到流程实例，可以查询出对应的员工信息
 		runtimeService.startProcessInstanceByKey(key, BUSSINESS_KEY, map);
 	}
 
+	// 【我的待办事务】 根据用户Id查找任务列表
 	@Override
 	public List<Task> findTaskListByUserId(String name) {
 		return taskService.createTaskQuery().taskAssignee(name).list();
@@ -186,7 +184,7 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		return map;
 	}
 
-	// 删除流程
+	// 删除部署流程
 	@Override
 	public void delectDeployment(String id) {
 		repositoryService.deleteDeployment(id, true);
@@ -213,7 +211,8 @@ public class WorkFlowServiceImpl implements WorkFlowService {
 		System.out.println(bussiness_key);
 		HistoricProcessInstance pi = this.historyService.createHistoricProcessInstanceQuery()
 													.processInstanceBusinessKey(bussiness_key).singleResult();		
-		List<Comment> commentList = this.taskService.getProcessInstanceComments(pi.getId());		
+		List<Comment> commentList = this.taskService.getProcessInstanceComments(pi.getId());
+		System.out.println("commentList:"+commentList);
 		return commentList;
 	}	
 

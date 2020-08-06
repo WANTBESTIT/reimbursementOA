@@ -14,7 +14,7 @@
             http://www.springframework.org/schema/util  
             http://www.springframework.org/schema/util/spring-util-3.2.xsd">    
    
-    <!-- HandlerMapping  HandlerAdapter handler(controller)   -->
+    <!-- HandlerMapping  HandlerAdapter handler(controller)  -->
 	<mvc:annotation-driven />
 	<!-- 
 		 加了类型转换器，静态资源 使用此种方法解析
@@ -30,6 +30,7 @@
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/"></property>
 		<property name="suffix" value=".jsp"></property>
+		
 	</bean>
 	
 	<!-- 支持文件上传 -->

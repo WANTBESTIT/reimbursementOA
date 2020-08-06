@@ -5,7 +5,6 @@ import java.util.List;
 import cn.web.workflow.pojo.EmployeeCustom;
 import cn.web.workflow.pojo.SysPermission;
 import cn.web.workflow.pojo.SysRole;
-import cn.web.workflow.pojo.SysUserRole;
 import cn.web.workflow.pojo.TreeMenu;
 
 public interface SysPermissionCustomMapper {
@@ -25,8 +24,18 @@ public interface SysPermissionCustomMapper {
 	// 用户列表
 	List<EmployeeCustom> findUserAndRoleList();
 
+	// 根据职位查找名称和权限
 	SysRole findRoleAndPermissionLIstByUserId(String name);
-
-	// 修改角色权限
-	SysUserRole updateEmployeeRoles(String roleId, String userId);
+	
+	// 得到角色权限的父菜单
+	List<TreeMenu> getAllMenuAndPermission();
+	
+	// 得到角色权限的子菜单
+	List<TreeMenu> getSubMenuAndPermissions();
+	
+	// 查询出所有角色的名称
+	List<SysRole> findAllRoleName();
+	
+	// 根据Id查询角色的权限
+	List<SysPermission> findPermissionsByRoleId(String roleId);
 }

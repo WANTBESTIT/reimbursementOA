@@ -106,8 +106,7 @@
 				<a href="${pageContext.request.contextPath}/myBaoxiaoBill?pageNum=${pageInfo.nextPage}">下一页</a> 
 				<a href="${pageContext.request.contextPath}/myBaoxiaoBill?pageNum=${pageInfo.pages}">尾页</a>
 			</c:otherwise>
-		</c:choose>
-		
+		</c:choose>	
 	</div>
 	</div>
 </body>

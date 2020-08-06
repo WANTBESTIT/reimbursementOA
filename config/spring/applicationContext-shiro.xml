@@ -18,7 +18,7 @@
 	<!-- 开启shiro注解支持 -->
 	<bean
 		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-		<property name="securityManager" ref="securityManager" />
+		<property name="securityManager" ref="securityManager"/>
 	</bean>
 
 	<!-- web.xml中shiro的filter对应的bean -->
@@ -35,7 +35,7 @@
 		<!-- 自定义filter配置 -->
 		<property name="filters">
 			<map>
-				<!-- 将自定义 的FormAuthenticationFilter注入shiroFilter中 -->
+				<!-- 将自定义 的FormAuthenticationFilter注入shiroFilter中-->
 				<entry key="authc" value-ref="formAuthenticationFilter" />
 			</map>
 		</property>
@@ -43,10 +43,19 @@
 		<!-- 过虑器链定义，从上向下顺序执行，一般将/**放在最下边 -->
 		<property name="filterChainDefinitions">
 			<value>
-				 /bootstrap/**=anon
+				/bootstrap/**=anon
 			    /css/**=anon
 			    /js/**=anon
 			    /static/**=anon
+			    /apply_baoxiao.jsp=perms[baoxiao:apply]
+			    /myBaoxiaoBill=perms[baoxiao:billquery]
+			    /myTaskList=perms[baoxiao:tasklist]
+			    /add_process.jsp=perms[baoxiao:publish]
+			    /processDefinitionList=perms[baoxiao:processlist]
+			    /findUserList=perms[user:query]
+			    <!-- /viewImage=perms[baoxiao:viewimage] --> 
+			    /main=user
+			    /welcome.html=user
 			    <!-- 退出系统 -->
 			    /logout=logout
 				/**=authc			

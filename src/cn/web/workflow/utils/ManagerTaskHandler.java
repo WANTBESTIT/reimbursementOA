@@ -4,11 +4,13 @@ import javax.servlet.http.HttpSession;
 
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import cn.web.workflow.pojo.ActiveUser;
 import cn.web.workflow.pojo.Employee;
 import cn.web.workflow.service.EmployeeService;
 
@@ -24,7 +26,7 @@ public class ManagerTaskHandler implements TaskListener {
 		// 要获得上级id，必须先获取当前用户id
 		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpSession session = attr.getRequest().getSession();
-		Employee employee = (Employee) session.getAttribute(Constants.GLOBAL_SESSION_ID);
+		ActiveUser employee = (ActiveUser)  SecurityUtils.getSubject().getPrincipal();
 
 		Employee manager = employeeService.findEmployeeByManagerId(employee.getManagerId());
 

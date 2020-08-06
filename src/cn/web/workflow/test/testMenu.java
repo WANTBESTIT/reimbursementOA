@@ -24,11 +24,18 @@ public class testMenu {
 		List<TreeMenu> menus = sysPermissionCustomMapper.findMenuList();
 		for (TreeMenu treeMenu : menus) {
 			System.out.println(treeMenu.getId() + "," + treeMenu.getName()); // 一级菜单
+			
+			for (SysPermission sysPermission : treeMenu.getChildren()) {
+				System.out.println("\t"+sysPermission.getName());
+			}
+			
 		}
-		List<SysPermission> subMenu = sysPermissionCustomMapper.getSubMenu();
-		for (SysPermission sysPermission : subMenu) {
-			System.out.println(
-					"\t" + sysPermission.getName() + "," + sysPermission.getUrl() + "," + sysPermission.getPercode()); // 二级菜单
-		}
+//		List<SysPermission> subMenu = sysPermissionCustomMapper.getSubMenu();
+//		for (SysPermission sysPermission : subMenu) {
+//			System.out.println(
+//					"\t" + sysPermission.getName() + "," + sysPermission.getUrl() + "," + sysPermission.getPercode()); // 二级菜单
+//		}
+		
+	
 	}
 }

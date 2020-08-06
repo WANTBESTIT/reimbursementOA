@@ -1,7 +1,7 @@
 package cn.web.workflow.pojo;
 
 public class SysPermission {
-    private Long id;
+	private Long id;
 
     private String name;
 
@@ -18,7 +18,7 @@ public class SysPermission {
     private String sortstring;
 
     private String available;
-
+    
     public Long getId() {
         return id;
     }

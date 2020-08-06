@@ -58,7 +58,7 @@
 	                        <td>${user.name}</td>
 	                        <td>${user.email}</td>
 	                        <td>
-		                        <select class="form-control" onchange="assignRole(this.value,'${user.name}')">
+		                        <select class="form-control" onchange="assignRole(this.value,'${user.id}')">
 		                        	<c:forEach var="role" items="${allRoles}">
 		                        		<option value="${role.id}" <c:if test="${role.name==user.rolename}">selected</c:if>>${role.name}</option>
 		                        	</c:forEach>
@@ -193,11 +193,14 @@
 		}
 		
 		//重新分配待办人
-		function assignRole(rid,uname) {
+		function assignRole(rid,id) {
+			/* 
+			alert(rid);
+			alert(id); */
 			var url = "assignRole";
 			var params = {
 				roleId:rid,
-				userId:uname
+				userId:id
 			};
 			$.getJSON(url,params,function(result){
 				alert(result.msg);

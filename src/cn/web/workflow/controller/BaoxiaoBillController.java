@@ -22,7 +22,11 @@ import cn.web.workflow.pojo.BaoxiaobillExample;
 import cn.web.workflow.service.BaoxiaoBillService;
 import cn.web.workflow.service.WorkFlowService;
 import cn.web.workflow.utils.Constants;
-
+/**
+ * 报销功能实现
+ * @author 滨仔
+ *
+ */
 @Controller
 public class BaoxiaoBillController {
 
